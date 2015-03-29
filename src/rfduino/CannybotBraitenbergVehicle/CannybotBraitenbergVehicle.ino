@@ -6,7 +6,7 @@
 //
 // License: http://opensource.org/licenses/MIT
 //
-// Version:   1.0  -  14.03.2015  -  Inital Version  (stuartmd@hoardingshinies.com)
+// Version:   1.0  -  14.03.2015  -  Initial Version  (stuartmd@hoardingshinies.com)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define BOT_NAME "BraitenbergVehicle1"               // custom name (16 chars max)
@@ -14,6 +14,8 @@
 #include <RFduinoGZLL.h>
 #include <RFduinoBLE.h>
 
+// Simple, global Response Curve
+int RESPONSE_CURVE[] = {2, 600, 0, 1024, 170};
 
 // PIN ASSIGNEMENT
 // total of 7 pins available of which any 4 can be defined as PWM
@@ -61,17 +63,8 @@ void loop() {
 
   readSensors(); //read photocell sensors
 
-  speedA = (SENSORvalL) / 4;
-  speedB = (SENSORvalR) / 4;
-
-  speedA = speedA / 3;
-  speedB = speedB / 3;
-
-  if (speedA<50)
-    speedA = 0;
-
-  if (speedB<50)
-    speedB = 0;
+  speedA = apply_response_curve(SENSORvalL, RESPONSE_CURVE);
+  speedB = apply_response_curve(SENSORvalR, RESPONSE_CURVE);
 
   motorSpeed(speedA, speedB);
 }
